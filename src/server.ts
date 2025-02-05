@@ -2,8 +2,8 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-import { testConnection } from './database/database';
 import anotaAiRoute from './routes/anotaAiRoute';
+import { testConnection } from './database/database';
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ const app: Application = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', anotaAiRoute);
+app.use('/api/anotaai', anotaAiRoute);
 
 const PORT = process.env.PORT || 3000;
 
