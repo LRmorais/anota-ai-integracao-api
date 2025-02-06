@@ -24,7 +24,9 @@ router.post('/enable', async (req: Request, res: Response) => {
             return;
         }
 
-        res.status(200).json(successResponse('Configuração criada com sucesso'));
+        await AnotaAiConfig.update({ active: true }, { where: { company_id } });
+
+        res.status(200).json(successResponse('Configuração atualizada com sucesso'));
     } catch (error) {
         if (error instanceof Error) {
             console.error(`[ERROR] Rota enable: ${error.message}`);
