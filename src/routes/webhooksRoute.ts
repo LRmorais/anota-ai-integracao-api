@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { OrderStatusResponse } from '../interfaces/webhooks/OrderStatusResponse'; // Interface da resposta
-import AnotaAiConfig from '../database/models/AnotaAiConfig'; // Modelo de configuração
+import { OrderStatusResponse } from '../interfaces/webhooks/OrderStatusResponse';
+import AnotaAiConfig from '../database/models/AnotaAiConfig';
 
 const router = Router();
 
