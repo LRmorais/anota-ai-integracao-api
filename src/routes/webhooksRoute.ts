@@ -14,7 +14,6 @@ const router = Router();
 
 router.post('/order_status', async (req: Request, res: Response) => {
     const payload: OrderStatusResponse = req.body;
-    const token = req.headers.authorization;
 
     if (!payload.merchant || !payload.merchant.id) {
         res.status(400).json(errorResponse('Campo merchant.id é obrigatório'));
@@ -84,7 +83,7 @@ router.post('/order_status', async (req: Request, res: Response) => {
 
         const response = await axios.post<OrdersResponse>(`${process.env.LOOCAL_API_URL}/orders`, orderRequestPayload, {
             headers: {
-                Authorization: token,
+                Authorization: `Bearer ${process.env.TOKEN_LOOCAL}`,
                 'Content-Type': 'application/json',
             },
         });
@@ -134,7 +133,7 @@ router.post('/cancel_order', async (req: Request, res: Response) => {
             },
             {
                 headers: {
-                    Authorization: req.headers.authorization,
+                    Authorization: `Bearer ${process.env.TOKEN_LOOCAL}`,
                     'Content-Type': 'application/json',
                 },
             }
