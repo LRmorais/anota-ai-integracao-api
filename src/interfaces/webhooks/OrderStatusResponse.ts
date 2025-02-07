@@ -81,7 +81,10 @@ export interface DeliveryAddress {
     country: string;
     state: string;
     city: string;
-    coordinates: any;
+    coordinates: {
+        latitude: number;
+        longitude: number;
+    };
     neighborhood: string;
     streetName: string;
     streetNumber: string;
