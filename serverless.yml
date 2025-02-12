@@ -1,0 +1,46 @@
+service: service-anotaai
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: prd
+  region: us-east-1
+  versionFunctions: false
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "sqs:*"
+      Resource: "*"
+
+functions:
+  api:
+    description: "API Serverless para integração com AnotaAi"
+    handler: app/app.handler
+    timeout: 60
+    memorySize: 256
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+
+package:
+  excludeDevDependencies: true
+  exclude:
+    - .vscode/**
+    - '*/**/*.js.map'
+    - coverage/**
+    - dist/test/**
+    - lib/**
+    - temp/**
+    - test/**
+    - .git/**
+    - docs/**
+    - .github/**
+    - .key.txt
+    - deploy.txt
