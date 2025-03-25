@@ -12,5 +12,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/anotaai', anotaAiRoute);
+app.get('/teste', (req, res) => {
+    res.json({ message: 'Rota de teste funcionando!' });
+});
 
 export default app;
