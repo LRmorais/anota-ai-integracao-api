@@ -12,12 +12,13 @@ interface AnotaAiConfigAttributes {
     created_at?: Date;
     updated_at?: Date;
     deleted_at?: Date;
+    slot_id: number;
 }
 
 interface AnotaAiConfigCreationAttributes
     extends Optional<
         AnotaAiConfigAttributes,
-        'id' | 'integration_key' | 'store_name' | 'store_id' | 'access_token' | 'active' | 'created_at' | 'updated_at' | 'deleted_at'
+        'id' | 'integration_key' | 'store_name' | 'store_id' | 'access_token' | 'active' | 'created_at' | 'updated_at' | 'deleted_at' | 'slot_id'
     > {}
 
 class AnotaAiConfig
@@ -34,6 +35,7 @@ class AnotaAiConfig
     public created_at?: Date;
     public updated_at?: Date;
     public deleted_at?: Date;
+    public slot_id!: number;
 }
 
 AnotaAiConfig.init(
@@ -79,6 +81,10 @@ AnotaAiConfig.init(
             type: DataTypes.DATE,
             allowNull: true,
         },
+        slot_id: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        }
     },
     {
         sequelize,

@@ -1,3 +1,4 @@
+import {OrderStatus as OrderStatusAnotaAi} from './webhooks/OrderStatusResponse';
 export interface OrderRequest {
     company_id: string;
     orders: Order[];
@@ -14,6 +15,7 @@ export interface Order {
     order_status_id: OrderStatus; // Status inicial do pedido
     thermal_box: boolean; // Requer caixa térmica
     get_sign: boolean; // Requer assinatura
+    anota_ai_order: anotaAiOrder
 }
 
 export interface Customer {
@@ -48,11 +50,14 @@ export enum PaymentType {
 }
 
 export enum OrderStatus {
-    WAITING = 1,
-    PREPARING = 2,
-    ON_THE_WAY_PICKUP = 3,
-    ON_THE_WAY = 4,
-    DELIVERED = 5,
+    PREPARING = 1,
+    READY = 2,
     CANCELED = 6,
-    ON_THE_WAY_TO_WITHDRAWAL = 7,
+}
+
+interface anotaAiOrder {
+    store_id: string;
+    company_id: number;
+    anota_ai_order_id: string;
+    check_status: OrderStatusAnotaAi;
 }
