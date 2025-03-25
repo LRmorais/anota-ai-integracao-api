@@ -3,7 +3,8 @@ service: service-anotaai
 provider:
   name: aws
   runtime: nodejs18.x
-  stage: prd
+  stage: ${opt:stage, 'dev'}
+  deploymentBucket: deploy-bucket-loocal-lambda
   region: us-east-1
   versionFunctions: false
 
@@ -16,7 +17,20 @@ provider:
 functions:
   api:
     description: "API Serverless para integração com AnotaAi"
-    handler: app/app.handler
+    handler: src/lambda.handler
+    environment:
+      DB_USER: ${self:custom.${self:provider.stage}.DB_USER}
+      DB_PASSWORD: ${self:custom.${self:provider.stage}.DB_PASSWORD}
+      DB_HOST: ${self:custom.${self:provider.stage}.DB_HOST}
+      DB_NAME: ${self:custom.${self:provider.stage}.DB_NAME}
+      DB_PORT: ${self:custom.${self:provider.stage}.DB_PORT}
+      CLIENT_ID: ${self:custom.${self:provider.stage}.CLIENT_ID}
+      CLIENT_SECRET: ${self:custom.${self:provider.stage}.CLIENT_SECRET}
+      ANOTA_AI_URL: ${self:custom.${self:provider.stage}.ANOTA_AI_URL}
+      LOOCAL_API_URL: ${self:custom.${self:provider.stage}.LOOCAL_API_URL}
+      TOKEN_LOOCAL: ${self:custom.${self:provider.stage}.TOKEN_LOOCAL}
+      URL_LAMBDA_ANOTA_AI: ${self:custom.${self:provider.stage}.URL_LAMBDA_ANOTA_AI}
+      GOOGLE_MAPS_API_KEY: ${self:custom.${self:provider.stage}.GOOGLE_MAPS_API_KEY}
     timeout: 60
     memorySize: 256
     events:
@@ -28,6 +42,41 @@ functions:
           path: /{proxy+}
           method: ANY
           cors: true
+
+custom:
+  dev:
+    stage: "dev"
+    DB_USER: postgres
+    DB_PASSWORD: "s4JY$C8&32!c"
+    DB_HOST: loocal-api-prd-serverless.cluster-ceddyythm83e.us-east-1.rds.amazonaws.com
+    DB_NAME: development
+    DB_PORT: 5432
+    CLIENT_ID: d8ce31c0-c076-4e7b-9e4d-d131768310dd
+    CLIENT_SECRET: 2abccab7-3fff-4fd6-aeea-13e3e0d357e8
+    ANOTA_AI_URL: https://api-parceiros.anota.ai/partnerauth
+    LOOCAL_API_URL: https://api-developer-v3.loocalapp.com/api
+    TOKEN_LOOCAL: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3RcL2FwaVwvZ2VuZXJhdGUtdG9rZW5cL2xvZ2luIiwiaWF0IjoxNzM4OTUzNDE1LCJleHAiOjQ4OTQ2MjcwMTUsIm5iZiI6MTczODk1MzQxNSwianRpIjoicHZTQ3JKY2o5bTNrMjhVUCIsInN1YiI6OTY3NywicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.24KHH1RPRnX506LErYdYkzys9Cha7ljy0Xa-a50akAs
+    URL_LAMBDA_ANOTA_AI: https://3qqize8sc1.execute-api.us-east-1.amazonaws.com/dev/api
+    GOOGLE_MAPS_API_KEY: AIzaSyClRvS4Nba8k0ZoCuW5Fh6o4vQG7UQghxw
+
+  prd:
+    stage: "prod"
+    DB_USER: postgres
+    DB_PASSWORD: "s4JY$C8&32!c"
+    DB_HOST: loocal-api-prd-serverless.cluster-ceddyythm83e.us-east-1.rds.amazonaws.com
+    DB_NAME: postgres
+    DB_PORT: 5432
+    CLIENT_ID: d8ce31c0-c076-4e7b-9e4d-d131768310dd
+    CLIENT_SECRET: 2abccab7-3fff-4fd6-aeea-13e3e0d357e8
+    ANOTA_AI_URL: https://api-parceiros.anota.ai/partnerauth
+    LOOCAL_API_URL: https://api-production-v3.loocalapp.com/api/
+    TOKEN_LOOCAL: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3RcL2FwaVwvZ2VuZXJhdGUtdG9rZW5cL2xvZ2luIiwiaWF0IjoxNzM4OTUzNDE1LCJleHAiOjQ4OTQ2MjcwMTUsIm5iZiI6MTczODk1MzQxNSwianRpIjoicHZTQ3JKY2o5bTNrMjhVUCIsInN1YiI6OTY3NywicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.24KHH1RPRnX506LErYdYkzys9Cha7ljy0Xa-a50akAs
+    URL_LAMBDA_ANOTA_AI: https://tga54kkmmc.execute-api.us-east-1.amazonaws.com/prd/api
+    GOOGLE_MAPS_API_KEY: AIzaSyClRvS4Nba8k0ZoCuW5Fh6o4vQG7UQghxw
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
 
 package:
   excludeDevDependencies: true
