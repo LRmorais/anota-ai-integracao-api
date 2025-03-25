@@ -2,6 +2,8 @@ import { Router, Request, Response } from 'express';
 import axios from 'axios';
 import AnotaAiConfig from '../database/models/AnotaAiConfig';
 import { errorResponse, successResponse } from '../utils/responseHelper';
+import AnotaAiOrders from "../database/models/AnotaAiOrders";
+import anotaAiOrders from "../database/models/AnotaAiOrders";
 
 const router = Router();
 
@@ -64,6 +66,88 @@ router.get('/detalhe_pedido/:company_id/:anota_ai_order_id', async (req: Request
     } catch (error) {
         console.error('Erro ao obter detalhes do pedido:', error);
         res.status(500).json(errorResponse('Erro interno ao obter detalhes do pedido', error.message));
+    }
+});
+
+router.post('/finalizar/pedido/:order_id', async (req: Request, res: Response) => {
+    const { order_id } = req.params;
+
+    try {
+        const orderAnotaAi = await AnotaAiOrders.findOne({ where: { order_id } });
+
+        const config = await AnotaAiConfig.findOne({ where: { store_id: orderAnotaAi?.store_id } });
+
+        if (!config) {
+            res.status(404).json(errorResponse('Configuração não encontrada para o order_id fornecido'));
+            return
+        }
+
+        const { access_token } = config;
+
+        if (!access_token) {
+            res.status(400).json(errorResponse('Access token não encontrado na configuração'));
+            return
+        }
+
+        const response = await axios.post(
+            `${process.env.ANOTA_AI_URL}/order/finalize/${orderAnotaAi?.anota_ai_order_id}`,
+            {},
+            {
+                headers: {
+                    Authorization: access_token,
+                },
+            }
+        );
+        await anotaAiOrders.update(
+            { check_status: 3 },
+            { where: { order_id } }
+        )
+        res.status(200).json(successResponse('Pedido finalizado com sucesso', response.data));
+    } catch (error) {
+        console.error('Erro ao finalizar pedido:', error);
+        res.status(500).json(errorResponse('Erro interno ao finalizar pedido', error.message));
+    }
+});
+
+router.post('/cancelar/pedido/:order_id', async (req: Request, res: Response) => {
+    const { order_id } = req.params;
+
+    try {
+        const orderAnotaAi = await AnotaAiOrders.findOne({ where: { order_id } });
+
+        const config = await AnotaAiConfig.findOne({ where: { store_id: orderAnotaAi?.store_id } });
+
+        if (!config) {
+            res.status(404).json(errorResponse('Configuração não encontrada para o order_id fornecido'));
+            return
+        }
+
+        const { access_token } = config;
+
+        if (!access_token) {
+            res.status(400).json(errorResponse('Access token não encontrado na configuração'));
+            return
+        }
+
+        const response = await axios.post(
+            `${process.env.ANOTA_AI_URL}/order/cancel/${orderAnotaAi?.anota_ai_order_id}`,
+            {
+                justification: ""
+            },
+            {
+                headers: {
+                    Authorization: access_token,
+                },
+            }
+        );
+        await anotaAiOrders.update(
+            { check_status: 6 },
+            { where: { order_id } }
+        )
+        res.status(200).json(successResponse('Pedido cancelado com sucesso', response.data));
+    } catch (error) {
+        console.error('Erro ao cancelar pedido:', error);
+        res.status(500).json(errorResponse('Erro interno ao cancelar pedido', error.message));
     }
 });
 
